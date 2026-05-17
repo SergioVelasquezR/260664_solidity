@@ -5,31 +5,39 @@ import "hardhat/console.sol";
 
 contract Biblioteca260664 {
 
-    // a) Estructura con 3 atributos, siendo id (entero) obligatorio
+    // Estructura con 3 atributos, siendo id (entero) obligatorio
     struct Libro {
         uint256 id;
         string titulo;
         string autor;
     }
 
-    // b) Arreglo público del tipo de la estructura
+    // Arreglo público del tipo de la estructura
     Libro[] public libros;
 
+    // c) Atributo dirContrato de tipo address, público, con valor de address(this)
+    address public dirContrato;
+
     constructor() {
-        // c) Console log con el formato requerido
-        console.log("Ejecutado por : 260664 - Sergio Emanuel Vel\u00e1squez Reyes");
+        // e) Console log en el constructor
+        console.log("Ejecutado por: 260664 - Sergio Emanuel Vel\u00e1squez Reyes");
+        // c) Inicializar dirContrato con la dirección del contrato
+        dirContrato = address(this);
     }
 
-    function agregarLibro(uint256 _id, string memory _titulo, string memory _autor) public {
+    // a) Método agregarElemento
+    function agregarElemento(uint256 _id, string memory _titulo, string memory _autor) public {
         libros.push(Libro(_id, _titulo, _autor));
+    }
+
+    // b) Método contarElementos con console.log
+    function contarElementos() public view returns (uint256) {
+        console.log("Ejecutado por: 260664 - Sergio Emanuel Vel\u00e1squez Reyes");
+        return libros.length;
     }
 
     function obtenerLibro(uint256 indice) public view returns (uint256, string memory, string memory) {
         Libro memory l = libros[indice];
         return (l.id, l.titulo, l.autor);
-    }
-
-    function totalLibros() public view returns (uint256) {
-        return libros.length;
     }
 }
