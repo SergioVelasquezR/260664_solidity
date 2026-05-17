@@ -39,6 +39,7 @@ contract Biblioteca260664 {
         cantidad = cantidad + 1;
     }
 
+
     function agregarElemento(
         uint256 _id,
         string memory _titulo,
