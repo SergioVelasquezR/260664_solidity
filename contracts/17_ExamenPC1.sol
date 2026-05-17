@@ -12,7 +12,9 @@ contract Biblioteca260664 {
         bool estado;
     }
 
-    Libro[] public libros;
+    mapping(uint256 => Libro) public libros;
+    uint256[] public idsLibros;
+    uint256 public cantidad;
     address public dirContrato;
 
     modifier registrarEjecucion() {
@@ -30,12 +32,11 @@ contract Biblioteca260664 {
         string memory _autor
     ) internal {
         require(bytes(_titulo).length > 0, "El titulo no puede estar vacio");
+        require(libros[_id].id == 0, "Libro con ese ID ya existe");
 
-        for (uint256 i = 0; i < libros.length; i++) {
-            require(libros[i].id != _id, "Libro con ese ID ya existe");
-        }
-
-        libros.push(Libro(_id, _titulo, _autor, true));
+        libros[_id] = Libro(_id, _titulo, _autor, true);
+        idsLibros.push(_id);
+        cantidad = cantidad + 1;
     }
 
     function agregarElemento(
@@ -47,43 +48,46 @@ contract Biblioteca260664 {
     }
 
     function contarElementos() public view registrarEjecucion returns (uint256) {
-        return libros.length;
+        return cantidad;
     }
 
-    function obtenerLibro(uint256 indice)
+    function obtenerLibro(uint256 _id)
         public
         view
         registrarEjecucion
         returns (uint256, string memory, string memory, bool)
     {
-        Libro memory l = libros[indice];
+        require(libros[_id].id != 0, "Libro no existe");
+        Libro memory l = libros[_id];
         return (l.id, l.titulo, l.autor, l.estado);
     }
 
-    function inactivarElemento(uint256 _posicion) public registrarEjecucion {
-        require(_posicion < libros.length, "Posicion fuera de rango");
-        libros[_posicion].estado = false;
+    function inactivarElemento(uint256 _id) public registrarEjecucion {
+        require(libros[_id].id != 0, "Libro no existe");
+        libros[_id].estado = false;
     }
 
     function pintarElementosActivos() public view registrarEjecucion {
-        for (uint256 i = 0; i < libros.length; i++) {
-            if (libros[i].estado == true) {
+        for (uint256 i = 0; i < idsLibros.length; i++) {
+            uint256 idActual = idsLibros[i];
+            if (libros[idActual].estado == true) {
                 console.log(
                     "Libro activo:",
-                    libros[i].id,
-                    libros[i].titulo
+                    libros[idActual].id,
+                    libros[idActual].titulo
                 );
             }
         }
     }
 
     function pintarElementosImpares() public view registrarEjecucion {
-        for (uint256 i = 0; i < libros.length; i++) {
-            if (libros[i].id % 2 != 0) {
+        for (uint256 i = 0; i < idsLibros.length; i++) {
+            uint256 idActual = idsLibros[i];
+            if (libros[idActual].id % 2 != 0) {
                 console.log(
                     "Libro ID impar:",
-                    libros[i].id,
-                    libros[i].titulo
+                    libros[idActual].id,
+                    libros[idActual].titulo
                 );
             }
         }
