@@ -5,39 +5,58 @@ import "hardhat/console.sol";
 
 contract Biblioteca260664 {
 
-    // Estructura con 3 atributos, siendo id (entero) obligatorio
     struct Libro {
         uint256 id;
         string titulo;
         string autor;
+        bool estado;
     }
 
-    // Arreglo público del tipo de la estructura
     Libro[] public libros;
-
-    // c) Atributo dirContrato de tipo address, público, con valor de address(this)
     address public dirContrato;
 
-    constructor() {
-        // e) Console log en el constructor
+    modifier registrarEjecucion() {
         console.log("Ejecutado por: 260664 - Sergio Emanuel Vel\u00e1squez Reyes");
-        // c) Inicializar dirContrato con la dirección del contrato
+        _;
+    }
+
+    constructor() registrarEjecucion {
         dirContrato = address(this);
     }
 
-    // a) Método agregarElemento
-    function agregarElemento(uint256 _id, string memory _titulo, string memory _autor) public {
-        libros.push(Libro(_id, _titulo, _autor));
+    function _registrarLibro(
+        uint256 _id,
+        string memory _titulo,
+        string memory _autor
+    ) internal {
+        require(bytes(_titulo).length > 0, "El titulo no puede estar vacio");
+
+        for (uint256 i = 0; i < libros.length; i++) {
+            require(libros[i].id != _id, "Libro con ese ID ya existe");
+        }
+
+        libros.push(Libro(_id, _titulo, _autor, true));
     }
 
-    // b) Método contarElementos con console.log
-    function contarElementos() public view returns (uint256) {
-        console.log("Ejecutado por: 260664 - Sergio Emanuel Vel\u00e1squez Reyes");
+    function agregarElemento(
+        uint256 _id,
+        string memory _titulo,
+        string memory _autor
+    ) public registrarEjecucion {
+        _registrarLibro(_id, _titulo, _autor);
+    }
+
+    function contarElementos() public view registrarEjecucion returns (uint256) {
         return libros.length;
     }
 
-    function obtenerLibro(uint256 indice) public view returns (uint256, string memory, string memory) {
+    function obtenerLibro(uint256 indice)
+        public
+        view
+        registrarEjecucion
+        returns (uint256, string memory, string memory, bool)
+    {
         Libro memory l = libros[indice];
-        return (l.id, l.titulo, l.autor);
+        return (l.id, l.titulo, l.autor, l.estado);
     }
 }
